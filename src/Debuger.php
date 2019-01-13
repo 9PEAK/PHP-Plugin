@@ -7,7 +7,6 @@ trait Debuger
 
 	private static $debug;
 
-
 	public static function debug ($msg=null, $code=0, $previous=null)
 	{
 		if ($msg||$code) {
