@@ -11,7 +11,6 @@ trait Debuger
 	{
 		if ($msg||$code) {
 			self::$debug = new \Exception($msg, $code, $previous);
-			throw self::$debug;
 		} else {
 			return self::$debug;
 		}
