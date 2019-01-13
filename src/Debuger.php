@@ -7,10 +7,11 @@ trait Debuger
 
 	private static $debug;
 
-	public static function debug ($dat=null)
+	public static function debug ($msg=null, $code=0, $previous=null)
 	{
-		if ($dat) {
-			self::$debug = $dat;
+		if ($msg||$code) {
+			self::$debug = new \Exception($msg, $code, $previous);
+			throw self::$debug;
 		} else {
 			return self::$debug;
 		}
