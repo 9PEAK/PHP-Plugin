@@ -29,13 +29,13 @@ class FileCache {
 	{
 
 		if (!file_exists($this->file)) {
-			return self::debug('缓存文件“'.$this->file.'”不存在。');
+			return self::debug('缓存文件不存在，路径：“'.$this->file.'”。');
 		}
 
 		$res = file_get_contents($this->file);
 
 		if ($res===false) {
-			return self::debug('无法读取缓存文件。');
+			return self::debug('无法读取缓存文件，路径：“'.$this->file.'”。');
 		}
 
 		return $res;
@@ -48,12 +48,12 @@ class FileCache {
 
 		$res = file_put_contents($this->file, is_string($dat) ? $dat : json_encode($dat));
 		if ($res===false) {
-			return self::debug('无法写入文件。');
+			return self::debug('无法写入文件，路径：“'.$this->file.'”。');
 		}
 
 		if ($this->rwx) {
 			if (!chmod($this->file, $this->rwx)) {
-				return self::debug('无法设置文件权限。');
+				return self::debug('无法设置文件权限，路径：“'.$this->file.'”。');
 			}
 		}
 
