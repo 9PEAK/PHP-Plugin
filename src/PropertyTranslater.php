@@ -2,7 +2,7 @@
 
 namespace Peak\Plugin;
 # 属性翻译器
-trait Translater
+trait PropertyTranslater
 {
 
 	/**
