@@ -126,6 +126,20 @@ abstract class Arr {
 
 
 	/**
+	 * 重置数组每个元素的值
+	 * @param $dat 数组
+	 * @param $val 重置的值
+	 * */
+	static function resetUnit (array $dat, $val=null)
+	{
+		foreach ($dat as &$unit) {
+			$unit = $val;
+		}
+		return $dat;
+	}
+
+
+	/**
 	 * 结合数组的key和value
 	 * @param $dat 待处理的数组数据
 	 * */
