@@ -1,6 +1,9 @@
 <?php
 
 namespace Peak\Plugin;
+
+use Peak\Plugin\SQL;
+
 # 属性翻译器
 trait PropertyTranslater
 {
@@ -94,6 +97,19 @@ trait PropertyTranslater
 
 		return true;
 
+	}
+
+
+
+
+	public static function sqlOfSelectProperties (array $property, array $limit=[], $prf='_', $ext='')
+	{
+		$property = $property ?: self::$translation;
+		$limit && $property=array_intersect($limit, $property);
+		foreach ($property as $key=>&$val) {
+			$val = SQL\Select::caseThenOfSimple($key, $val, $prf.$key.$ext);
+		}
+		return join (',', $property);
 	}
 
 
