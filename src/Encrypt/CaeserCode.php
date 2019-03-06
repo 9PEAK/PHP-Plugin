@@ -43,6 +43,4 @@ class CaeserCode {
         return self::convert($str, $this->to, $this->from);
     }
 
-
-
 }
