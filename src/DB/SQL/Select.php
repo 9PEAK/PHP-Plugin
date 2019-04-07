@@ -1,6 +1,6 @@
 <?php
 
-namespace Peak\Plugin\SQL;
+namespace Peak\Plugin\DB\SQL;
 
 trait Select
 {
