@@ -1,11 +1,11 @@
 <?php
 
-namespace Peak\Plugin;
+namespace Peak\Plugin\PropertyTranslater;
 
 use Peak\Plugin\SQL;
 
 # 属性翻译器
-trait PropertyTranslater
+trait Core
 {
 
 	/**
@@ -16,6 +16,7 @@ trait PropertyTranslater
 	 * */
 	public static function translation ($key=null, $callback=null)
 	{
+		// 获取完整的属性
 		$dat = [];
 		$cls = static::class;
 		while ($cls) {
@@ -23,7 +24,10 @@ trait PropertyTranslater
 			$cls = get_parent_class($cls);
 		}
 
+		// 获取个别属性
 		$dat = $key ? @$dat[$key] : $dat;
+
+		// 返回指定格式
 		return $callback ? call_user_func_array($callback, [$dat]) : $dat;
 	}
 
@@ -97,6 +101,19 @@ trait PropertyTranslater
 
 		return true;
 
+	}
+
+
+
+
+	public static function sqlOfSelectProperties (array $property, array $eccept=[], $prf='_', $ext='')
+	{
+		$property = $property ?: self::$translation;
+		$eccept && $property=array_intersect($eccept, $property);
+		foreach ($property as $key=>&$val) {
+			$val = SQL\Select::caseThenOfSimple($key, $val, $prf.$key.$ext);
+		}
+		return join (',', $property);
 	}
 
 
