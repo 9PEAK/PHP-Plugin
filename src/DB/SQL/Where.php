@@ -2,7 +2,7 @@
 
 namespace Peak\Plugin\DB\SQL;
 
-use Peak\Plugin\DB\Query;
+use Peak\Plugin\DB\Core;
 
 trait Where
 {
@@ -49,7 +49,7 @@ trait Where
 			return self::null($key);
 		}
 
-		Query::bind([
+		Core::setParam([
 			$key => $val
 		]);
 		return self::raw($key, '?');

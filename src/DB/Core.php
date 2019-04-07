@@ -43,7 +43,25 @@ class Core
 //	}
 
 
-	protected static $statement_param;
+	protected static $statement_param = [];
+
+	/**
+	 * 设置绑定查询参数
+	 * @param $dat string 加入查询的变量 默认为空 清空查询值
+	 * @return int 加入变量的总数。
+	 * */
+	static function setParam (array $param=[])
+	{
+		$n = count(self::$statement_param);
+		foreach ($param as $k=>$v) {
+			is_array($v) ? self::{__FUNCTION__}(self::$statement_param, $v) : self::$statement_param[]=$v;
+		}
+		$param || self::$statement_param=[];
+
+		$n = count(self::$statement_param)-$n;
+		return $n>0 ? $n : 0;
+	}
+
 
 	/**
 	 * 执行SQL查询
@@ -53,6 +71,7 @@ class Core
 	 * */
 	final static function handle ($sql, array $param=[])
 	{
+//		echo $sql,'<br>';
 		return Query::exec($sql, $param);
 	}
 
@@ -68,6 +87,7 @@ class Core
 	static function create ($sql, $lastId=false)
 	{
 		$sth = self::handle($sql, self::$statement_param);
+		self::setParam([]);
 		if ($sth) {
 			if ($lastId) {
 				return self::createdId();
@@ -96,14 +116,15 @@ class Core
 	static function read ($sql, $single=true, $type='assoc')
 	{
 		$sth = self::handle($sql, self::$statement_param);
+		self::setParam([]);
 		if (!$sth) return false;
 
 		if (is_string($type)) {
-			$type =& \PDO::FETCH_ASSOC;
+			$type = \PDO::FETCH_ASSOC;
 		} else if (is_int($type)) {
-			$type =& \PDO::FETCH_NUM;
+			$type = \PDO::FETCH_NUM;
 		} else if (is_null($type)) {
-			$type =& \PDO::FETCH_OBJ;
+			$type = \PDO::FETCH_OBJ;
 		}
 		return $single ? $sth->fetch($type) : $sth->fetchAll($type);
 	}
@@ -111,7 +132,9 @@ class Core
 
 	static function update ($sql)
 	{
-		return (bool)self::handle($sql, self::$statement_param);
+		$res = self::handle($sql, self::$statement_param);
+		self::setParam([]);
+		return $res;
 	}
 
 

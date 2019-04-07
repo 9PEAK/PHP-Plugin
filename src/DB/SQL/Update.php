@@ -2,7 +2,7 @@
 
 namespace Peak\Plugin\DB\SQL;
 
-use Peak\Plugin\DB\Query;
+use Peak\Plugin\DB\Core;
 
 trait Update
 {
@@ -23,11 +23,13 @@ trait Update
 	 * @param $glue string 连接符
 	 * @return string sql语句
 	 * */
-	static function set (array $dat, $glue='=')
+	static function set (array $dat)
 	{
 		if ($dat) {
-			$n = Query::bind($dat);
-			$dat = array_fill(0, $n, $glue.'?');
+			$n = Core::setParam($dat);
+			foreach ($dat as $k=>&$v) {
+				$v = $k.'=?';
+			}
 			$dat = join( ',' , $dat );
 			return ' '.$dat.' ';
 		}

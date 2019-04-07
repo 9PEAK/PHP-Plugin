@@ -5,13 +5,14 @@ namespace Peak\Plugin\DB;
 trait Connection {
 
 
-	/** 数据库连接
-	 * @param
-	 * $db ： 数据库名
-	 * $usr : 数据库用户名
-	 * $pwd : 数据库密码
-	 * $host : 主机
-	 * $port : 链接端口
+	/**
+	 * 数据库连接
+	 * @param $db string 数据库名
+	 * @param $usr string 数据库用户名
+	 * @param $pwd string 数据库密码
+	 * @param $host string 主机
+	 * @param $port int 链接端口
+	 * @return mixed \PDO
 	 */
 	static function handle ($type, $db , $usr=null , $pwd=null , $host='localhost' , $port=null)
 	{
@@ -58,8 +59,6 @@ trait Connection {
 		// 无法连接数据库
 
 	}
-
-
 
 
 }

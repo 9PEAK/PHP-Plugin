@@ -8,11 +8,6 @@ trait Common
 {
 
 
-
-
-
-
-
 	/**
 	 * 构造IN语句
 	 * @param $key string 字段名
