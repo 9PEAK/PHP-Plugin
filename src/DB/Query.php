@@ -17,17 +17,14 @@ trait Query
 	}
 
 
-//	private static $param = [];
-
-
 
 
 
 	static function exec ($sql, array $param=[])
 	{
 		$sth = self::$pdo->prepare($sql);
-echo $sql,'<br>';
-print_r($param);
+//echo $sql,'<br>';
+//print_r($param);
 //exit;
 		foreach ($param as $i=>$val ) {
 			if (is_int($val)) {

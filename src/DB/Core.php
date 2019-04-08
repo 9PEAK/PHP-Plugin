@@ -5,16 +5,13 @@ namespace Peak\Plugin\DB;
 class Core
 {
 
+	static function connect ($type='mysql')
+	{
+		Query::pdo(Connector::init($type));
+	}
+
 //	static $debug_on = true ;
 //	static $debug_error = [] ;
-
-//	static $db_type = 'mysql' ;
-//	static $pdo , $sth ;
-
-//	static function config ( $type , $debug ) {
-//		self::$db_type = $type ;
-//		self :: $debug_on = $debug ;
-//	}
 
 
 	/* sql查询错误返回
@@ -27,20 +24,7 @@ class Core
 //		return $res ;
 //	}
 
-//	protected static $pdo;
 
-	static function connect (\PDO $pdo)
-	{
-		Query::pdo($pdo);
-	}
-
-
-	// mysql的sql查询预处理
-//	static function pre_query () {
-//		if ( self::$db_type == 'mysql' ) {
-//			self :: $pdo->query ('set names utf8') ;
-//		}
-//	}
 
 
 	protected static $statement_param = [];
@@ -66,12 +50,12 @@ class Core
 	/**
 	 * 执行SQL查询
 	 * @param $sql string 查询语句
-	 * @param $param array 查询参数
 	 * @return object PDO::Statement
 	 * */
-	final static function handle ($sql, array $param=[])
+	final protected static function query ($sql)
 	{
-//		echo $sql,'<br>';
+		$param = self::$statement_param;
+		self::setParam([]);
 		return Query::exec($sql, $param);
 	}
 
@@ -86,8 +70,7 @@ class Core
 	 * */
 	static function create ($sql, $lastId=false)
 	{
-		$sth = self::handle($sql, self::$statement_param);
-		self::setParam([]);
+		$sth = self::query($sql);
 		if ($sth) {
 			if ($lastId) {
 				return self::createdId();
@@ -115,8 +98,7 @@ class Core
 	 * */
 	static function read ($sql, $single=true, $type='assoc')
 	{
-		$sth = self::handle($sql, self::$statement_param);
-		self::setParam([]);
+		$sth = self::query($sql);
 		if (!$sth) return false;
 
 		if (is_string($type)) {
@@ -132,40 +114,16 @@ class Core
 
 	static function update ($sql)
 	{
-		$res = self::handle($sql, self::$statement_param);
-		self::setParam([]);
-		return $res;
+		return (bool)self::query($sql);
 	}
 
 
 	static function delete ($sql)
 	{
-		return (bool)self::handle($sql, self::$statement_param);
+		return (bool)self::query($sql);
 	}
 
 
-
-
-
-
-
-	// 执行一条sql查询 返回单行记录
-	// 通常是高级查询 在外部拼装好sql语句 并处理好绑定值
-//	static function fetch ($sql) {
-//
-//		$sth = self::query ($sql, $param);
-//		return $res ? $sth->fetch ( PDO::FETCH_ASSOC ) : $res ;
-//
-//	}
-
-
-
-	// 执行一条sql查询 返回多行记录
-//	static function fetch_s ( $sql ) {
-//
-//		$res = self :: query ( $sql ) ;
-//		return $res ? self::$sth ->fetchAll( PDO::FETCH_ASSOC ) : $res ;
-//	}
 
 
 
@@ -180,52 +138,13 @@ class Core
 //	}
 
 
-//
-//
-//
-//
-//	// 执行select 单行查询
-//	static function select ( $tb , $field , $where ) {
-//		$sql = self::sqlSelect( $tb , $field , $where ) ;
-//		return self :: fetch ( $sql ) ;
-//	}
-//
-//
-//	// 执行select 多行行查询
-//	static function select_s ( $tb , $field , $where ) {
-//		$sql = self::sqlSelect( $tb , $field , $where ) ;
-//		return self :: fetch_s ( $sql ) ;
-//	}
-
-
-	// 执行select count(*) 查询
-	static function count ( $tb , $where=null ) {
-		$res = self::select ( $tb , 'count(*)' , $where ) ;
-		return $res['count(*)'] ;
-	}
-
-
-	// 组织select语句
-	static function sqlSelect ( $tb , $field='*' , $where=null ) {
-
-		$field = is_array($field) ? join( ',' , $field ) : $field ;
-		$tb = is_array($tb) ? join( ',' , $tb ) : $tb ;
-		$where = self::where_and($where) ;
-
-		$sql = 'select '.$field.' from '.$tb ;
-		$sql.= $where ? ' where ' .$where : ' ' ;
-
-		return $sql ;
-	}
-
-
 
 
 	/**
 	 * 表事务
-	 * @param $step int 0开始，1提交，-1回滚。
+	 * @param $step int 0或''开始，1或'+'提交，-1或'-'回滚。
 	 * */
-	static function transaction ($step )
+	static function transaction ($step=0)
 	{
 		$pdo = Query::pdo();
 		switch ($step ) {
@@ -233,7 +152,11 @@ class Core
 //				echo self::$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT) ,'<br>' ;
 				$pdo->beginTransaction() ;
 				$pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 0);
-//				echo self::$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT) ;
+//				echo self::$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT);
+				break;
+
+			case '':
+				self::{__FUNCTION__}(0);
 				break;
 
 			case 1:
@@ -241,10 +164,18 @@ class Core
 				$pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 1) ;
 				break ;
 
+			case '+':
+				self::{__FUNCTION__}(1);
+				break;
+
 			case -1:
 				$pdo->rollBack() ;
 				$pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 1) ;
 				break ;
+
+			case '-':
+				self::{__FUNCTION__}(-1);
+				break;
 		}
 
 
@@ -274,9 +205,30 @@ class Core
 
 
 
+	// 执行select count(*) 查询
+	static function count ( $tb , $where=null ) {
+		$res = self::select ( $tb , 'count(*)' , $where ) ;
+		return $res['count(*)'] ;
+	}
+
+
+	// 组织select语句
+	static function sqlSelect ( $tb , $field='*' , $where=null ) {
+
+		$field = is_array($field) ? join( ',' , $field ) : $field ;
+		$tb = is_array($tb) ? join( ',' , $tb ) : $tb ;
+		$where = self::where_and($where) ;
+
+		$sql = 'select '.$field.' from '.$tb;
+		$sql.= $where ? ' where ' .$where : ' ' ;
+
+		return $sql ;
+	}
+
+
 
 	static function affect ($sql ) {
-		$res = self::query ($sql) ;
+		$res = self::query ($sql);
 		return self::$sth->rowCount();
 	}
 
