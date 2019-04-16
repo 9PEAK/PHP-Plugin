@@ -23,9 +23,7 @@ trait Query
 	static function exec ($sql, array $param=[])
 	{
 		$sth = self::$pdo->prepare($sql);
-//echo $sql,'<br>';
-//print_r($param);
-//exit;
+
 		foreach ($param as $i=>$val ) {
 			if (is_int($val)) {
 				$type = \PDO::PARAM_INT;
@@ -39,12 +37,14 @@ trait Query
 
 
 		if (!$sth->execute()) {
-			// debug
+			return self::debug($sth->errorInfo());
 		}
 
 		return $sth;
 
 	}
+
+	use \Peak\Plugin\Debuger\Base;
 
 
 

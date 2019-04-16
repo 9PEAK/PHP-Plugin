@@ -2,6 +2,7 @@
 
 namespace Peak\Plugin\DB\SQL;
 
+use Peak\Plugin\DB\Core;
 use Peak\Plugin\DB\Query;
 
 trait Insert
@@ -27,7 +28,7 @@ trait Insert
 
 		if (count($dat)==count($dat,1) ) {
 			// 绑定并生成sql语句
-			$n = Query::bind($dat);
+			$n = Core::setParam($dat);
 			$dat = array_fill (0 , $n , '?' ) ;
 			$dat = join ( ',' , $dat ) ;
 			$dat = '('.$dat.')' ;
@@ -77,6 +78,6 @@ trait Insert
 		return $sql;
 	}
 
-	
+
 
 }

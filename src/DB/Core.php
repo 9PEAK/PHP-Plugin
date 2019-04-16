@@ -25,6 +25,9 @@ class Core
 //	}
 
 
+	use \Peak\Plugin\Debuger\Base;
+
+
 
 
 	protected static $statement_param = [];
@@ -56,7 +59,7 @@ class Core
 	{
 		$param = self::$statement_param;
 		self::setParam([]);
-		return Query::exec($sql, $param);
+		return Query::exec($sql, $param) ?: self::debug(Query::debug());
 	}
 
 
@@ -139,19 +142,6 @@ class Core
 
 
 
-	static function transact (\Closure $func)
-	{
-		self::transaction();
-		try {
-			$res = $func();
-			self::transaction(1);
-			return $res;
-		} catch (\Exception $e) {
-			self::transaction(-1);
-			return $e;
-		}
-	}
-
 
 	/**
 	 * 表事务
@@ -162,10 +152,10 @@ class Core
 		$pdo = Query::pdo();
 		switch ($step ) {
 			case 0:
-//				echo self::$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT) ,'<br>' ;
+				echo $pdo->getAttribute(\PDO::ATTR_AUTOCOMMIT) ,'<br>' ;
 				$pdo->beginTransaction() ;
 				$pdo->setAttribute(\PDO::ATTR_AUTOCOMMIT, 0);
-//				echo self::$pdo->getAttribute(PDO::ATTR_AUTOCOMMIT);
+				echo $pdo->getAttribute(\PDO::ATTR_AUTOCOMMIT);
 				break;
 
 			case '':
