@@ -139,6 +139,19 @@ class Core
 
 
 
+	static function transact (\Closure $func)
+	{
+		self::transaction();
+		try {
+			$res = $func();
+			self::transaction(1);
+			return $res;
+		} catch (\Exception $e) {
+			self::transaction(-1);
+			return $e;
+		}
+	}
+
 
 	/**
 	 * 表事务
