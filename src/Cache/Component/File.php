@@ -60,7 +60,6 @@ class File extends Core
 
 
 
-
 	/**
 	 * 设置|获取缓存文件
 	 * */
@@ -68,9 +67,5 @@ class File extends Core
 	{
 		return $dat ? $this->set_cache($dat) : $this->get_cache();
 	}
-
-
-
-
 
 }
