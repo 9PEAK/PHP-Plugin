@@ -11,6 +11,7 @@ trait Base
 	{
 		if (isset($error)) {
 			self::$debug = $error;
+			return false;
 		} else {
 			return self::$debug;
 		}
