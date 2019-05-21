@@ -25,17 +25,21 @@ class FileCache {
 
 
 
+	/**
+	 * 读取文件
+	 * @return string|false|null 成功读取文件，返回string；读取失败，返回false；文件不存在，返回null。
+	 * */
 	protected function get_content ()
 	{
 
 		if (!file_exists($this->file)) {
-			return self::debug('缓存文件不存在，路径：“'.$this->file.'”。');
+			self::debug('缓存文件不存在，路径：“'.$this->file.'”。');
+			return null;
 		}
 
-		$res = file_get_contents($this->file);
-
+		$res = @file_get_contents($this->file);
 		if ($res===false) {
-			return self::debug('无法读取缓存文件，路径：“'.$this->file.'”。');
+			self::debug('无法读取缓存文件，路径：“'.$this->file.'”。');
 		}
 
 		return $res;
@@ -43,6 +47,10 @@ class FileCache {
 
 
 
+	/**
+	 * 存储文件
+	 * @return bool
+	 * */
 	protected function save_content ($dat)
 	{
 
