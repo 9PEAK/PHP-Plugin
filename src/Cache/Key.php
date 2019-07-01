@@ -10,5 +10,4 @@ trait Key
 		return static::class.':'.$id;
 	}
 
-
 }
