@@ -11,7 +11,7 @@ trait Core
 	/**
 	 * 获取翻译属性:向上合并父类属性
 	 * @param $key string|null 需要获取的参数，如果不指定，则返回所有参数
-	 * @param $callback sring 回调函数名，格式化属性
+	 * @param $callback string 回调函数名，格式化属性
 	 * @return array
 	 * */
 	public static function translation ($key=null, $callback=null)
@@ -97,25 +97,13 @@ trait Core
 		$prop = array_keys($prop);
 
 		foreach ( $prop as $k ) {
-			$this->{$prf.$k.$ext} = $this->translateProperty($k);
+			isset($this->$k) && $this->{$prf.$k.$ext} = $this->translateProperty($k);
 		}
 
 		return true;
 
 	}
 
-
-
-
-	public static function sqlOfSelectProperties (array $property, array $eccept=[], $prf='_', $ext='')
-	{
-		$property = $property ?: self::$translation;
-		$eccept && $property=array_intersect($eccept, $property);
-		foreach ($property as $key=>&$val) {
-			$val = SQL\Select::caseThenOfSimple($key, $val, $prf.$key.$ext);
-		}
-		return join (',', $property);
-	}
 
 
 }
