@@ -11,24 +11,26 @@ trait Core
 	/**
 	 * 获取翻译属性:向上合并父类属性
 	 * @param $key string|null 需要获取的参数，如果不指定，则返回所有参数
-	 * @param $callback string 回调函数名，格式化属性
+	 * @param $ext bool 是否继承父级属性
 	 * @return array
 	 * */
-	public static function translation ($key=null, $callback=null)
+	public static function translation ($key=null, $ext=true)
 	{
-		// 获取完整的属性
-		$dat = [];
 		$cls = static::class;
-		while ($cls) {
-			$dat = array_merge(property_exists($cls, __FUNCTION__)&&is_array($cls::${__FUNCTION__}) ? $cls::${__FUNCTION__} : [], $dat);
-			$cls = get_parent_class($cls);
+
+		// 获取完整的属性
+		if ($ext) {
+			$dat = [];
+			while ($cls) {
+				$dat = array_merge(property_exists($cls, __FUNCTION__)&&is_array($cls::${__FUNCTION__}) ? $cls::${__FUNCTION__} : [], $dat);
+				$cls = get_parent_class($cls);
+			}
+		} else {
+			$dat = $cls::${__FUNCTION__};
 		}
 
 		// 获取个别属性
-		$dat = $key ? @$dat[$key] : $dat;
-
-		// 返回指定格式
-		return $callback ? call_user_func_array($callback, [$dat]) : $dat;
+		return $key ? @$dat[$key] : $dat;
 	}
 
 
