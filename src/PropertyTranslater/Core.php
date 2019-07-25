@@ -107,5 +107,4 @@ trait Core
 	}
 
 
-
 }
