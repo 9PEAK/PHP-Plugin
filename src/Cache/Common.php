@@ -2,12 +2,12 @@
 
 namespace Peak\Plugin\Cache;
 
-trait Key
+trait Common
 {
 
 	protected static function key ($id)
 	{
-		return static::class.':'.$id;
+		return static::class.':'.(string)$id;
 	}
 
 }

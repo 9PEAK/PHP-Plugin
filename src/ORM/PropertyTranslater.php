@@ -1,6 +1,6 @@
 <?php
 
-namespace Peak\Plugin;
+namespace Peak\Plugin\ORM;
 
 use Peak\Plugin\SQL;
 

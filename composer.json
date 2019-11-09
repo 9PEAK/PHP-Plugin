@@ -10,13 +10,17 @@
         }
     ],
     "require": {
-        "php": ">= 5.3"
+        "php": ">= 7.0"
     },
     "require-dev": {},
     "autoload": {
         "psr-4": {
             "Peak\\Plugin\\": "src"
-        }
+        },
+        "files": [
+            "src/Arr.php",
+            "src/Str.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": false

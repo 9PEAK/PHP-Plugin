@@ -1,40 +1,48 @@
 <?php
 
-namespace Peak\Plugin;
+
+const STR = [
+    -1 => 'abcdefghijklmnopqrstuvwxyz',
+    0 => '1234567890',
+    1 => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+];
+
+
+/**
+ * 返回字符串原材料
+ * @param $type string, 1 upper letter, -1 lower letter, 0 integer.
+ * */
+function str($type)
+{
+    $type = (string)$type;
+    $material = STR;
+    foreach ( $material as $i=>$unit ) {
+        if (stripos($type, (string)$i)===false) {
+            unset ($material[$i]);
+        } else {
+            $type = str_replace($i, '', $type);
+        }
+    }
+    return join('', $material);
+}
+
+
+/**
+ * 生成随机字符串（大小写字母和数字）
+ * @param int $size 长度
+ * @param string $type 类型
+ * @return bool|string
+ */
+function str_random ($size=4, $type='-101') {
+    $code = str($type);
+    $code = str_shuffle($code);
+    return substr($code, 0, $size);
+}
+
 
 abstract class Str {
 
-	const LETTER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	const INTEGER = '1234567890';
 
-	/**
-	 *
-	 * @param $type string, 1 upper letter, -1 lower letter, 0 integer.
-	 * */
-	private static function set_material($type)
-	{
-		$type = (string)$type;
-		$material = [
-			-1 => strtolower(self::LETTER),
-			0 => self::INTEGER,
-			1 => self::LETTER,
-		];
-		foreach ( $material as $i=>$unit ) {
-			if (stripos($type, (string)$i)===false) {
-				unset ($material[$i]);
-			} else {
-				$type = str_replace($i, '', $type);
-			}
-		}
-
-		return join('', $material);
-	}
-
-	static function random ($size=4, $type='-101') {
-		$code = self::set_material($type);
-		$code = str_shuffle($code);
-		return substr($code, 0, $size);
-	}
 
 
 	static function caseCamel ($str, $separator='_')

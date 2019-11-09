@@ -9,7 +9,7 @@ abstract class Core
 
 	use \Peak\Plugin\Debuger\Base;
 
-	use Key;
+	use Common;
 
 	abstract protected function set_cache ($dat, $id=null, $exp=60):bool;
 	abstract protected function get_cache ($id=null);

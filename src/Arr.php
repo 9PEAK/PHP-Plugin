@@ -1,27 +1,36 @@
 <?php
 
-namespace Peak\Plugin;
+/**
+ * 数组转对象
+ * @return \stdClass
+ */
+function array_to_obj (array $arr)
+{
+    return json_decode(json_encode($arr));
+}
+
+
+/**
+ * 将数组里的元素转化为utf8
+ * 深度转化，递归至最深层次的数组元素
+ * */
+function array_utf8 (array &$arr) {
+    foreach ( $arr as &$v ) {
+        if (is_array($v)) {
+            (__FUNCTION__)($v);
+        } else {
+            $v = mb_convert_encoding($v, 'UTF-8', 'Windows-1252');
+        }
+    }
+    return $arr;
+}
+
+function arrInitUnit ($arr)
+{
+
+}
 
 abstract class Arr {
-
-	/**
-	 * 获取数组元素
-	 * @param $arr
-	 * @param $key 支持链式调用 默认null
-	 * @param $delimiter 链式调用分隔符
-	 * @return mixed array | string
-	 * */
-	static function array_key_chain (array $arr, $key=null, $delimiter='.')
-	{
-		if ($key) {
-			$key = explode($delimiter, $key);
-			foreach ($key as $k) {
-				$arr = @$arr[$k];
-			}
-		}
-		return $arr;
-	}
-
 
 
 	/**
@@ -82,34 +91,6 @@ abstract class Arr {
 	}
 
 
-	/**
-	 * 将数组里的元素转化为utf8
-	 * 深度转化，递归至最深层次的数组元素
-	 * */
-	static function utf8 (array &$arr) {
-		foreach ( $arr as &$v ) {
-			if (is_array($v)) {
-				$func = __FUNCTION__;
-				self::$func($v);
-			} else {
-				$v = mb_convert_encoding($v, 'UTF-8', 'Windows-1252');
-			}
-		}
-		return $arr;
-	}
-
-	/**
-	 * flip array, and set each item as a default value（翻转数组，并给每个元素设置初始值。）
-	 *
-	 * */
-	static function flip (array $arr, $default=null)
-	{
-		$arr = array_flip($arr);
-		foreach ($arr as &$val ) {
-			$val = $default;
-		}
-		return $arr;
-	}
 
 
 	/**
@@ -125,39 +106,50 @@ abstract class Arr {
 	}
 
 
-	/**
-	 * 重置数组每个元素的值
-	 * @param $dat 数组
-	 * @param $val 重置的值
-	 * */
-	static function resetUnit (array $dat, $val=null)
-	{
-		foreach ($dat as &$unit) {
-			$unit = $val;
-		}
-		return $dat;
-	}
-
-
-	/**
-	 * 结合数组的key和value
-	 * @param $dat 待处理的数组数据
-	 * */
-	static function joinKeyVal (array $dat, $unitGlue='=')
-	{
-		foreach ($dat as $key=>&$val) {
-			$val = $key.$unitGlue.$val;
-		}
-		return $dat;
-	}
-
-
-	static function joinKeyValToString (array $dat, $unitGlue='=', $groupGlue='&')
-	{
-		$dat = self::joinKeyVal($dat, $unitGlue);
-		return join($groupGlue, $dat);
-	}
+}
 
 
 
+/**
+ * 重置数组每个元素的值
+ * @param array $arr 数组
+ * @param mixed $val 重置的值
+ * */
+function array_reset (array $arr, $val=null)
+{
+    foreach ($arr as &$unit) {
+        $unit = $val;
+    }
+    return $arr;
+}
+
+
+/**
+ * 翻转数组，并给每个元素设置初始值 flip array, and set each item as a default value（。）
+ * @param array $arr
+ * @param mixed $default 默认null
+ * */
+function array_flip_with_val (array $arr, $default=null)
+{
+    return array_reset(array_flip($arr), $default);
+}
+
+
+/**
+ * 结合数组的key和value
+ * @param array $arr 待处理的数组数据
+ * @param string $kv 连接符
+ * */
+function array_join (array $arr, $kv='=')
+{
+    foreach ($arr as $key=>&$val) {
+        $val = $key.$kv.$val;
+    }
+    return $arr;
+}
+
+
+function array_join_to_str (array $arr, $kv='=', $glue='&')
+{
+    return join($glue, array_join($arr, $kv));
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Peak\Plugin;
+namespace Peak\Plugin\Http;
 
-trait JsonResponser
+trait ResponseTpl
 {
 
 	/**
@@ -75,7 +75,6 @@ trait JsonResponser
 	{
 		return self::resRaw(-1.3, $msg, $dat);
 	}
-
 
 
 }
