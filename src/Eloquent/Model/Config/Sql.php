@@ -1,6 +1,6 @@
 <?php
 
-namespace Peak\Plugin\PropertyTranslater;
+namespace Peak\Plugin\Eloquent;
 
 use Peak\Plugin\SQL as Query;
 
@@ -23,6 +23,8 @@ trait Sql
 		));
 		return $query;
 	}
+
+
 
 	/**
 	 * SQL查询获取配置的Property的查询语句
