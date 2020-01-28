@@ -1,8 +1,8 @@
 <?php
 
-namespace Peak\Plugin\Debuger;
+namespace Peak\Plugin;
 
-trait Base
+trait Debuger
 {
 
 	private static $debug;
