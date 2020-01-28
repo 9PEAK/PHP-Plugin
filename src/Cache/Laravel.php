@@ -9,26 +9,27 @@ trait Laravel
 
     use Common;
 
-	public static function set_cache ($dat, $id=null, $exp=60):bool
+
+	public static function cacheSet ($key, $val, $exp=60):bool
 	{
-		$id = self::key($id);
-		$exp>0 ? Cache::put($id, $dat, $exp) : Cache::forever($id, $dat);
+		$key = self::cacheKey($key);
+		$exp>0 ? Cache::put($key, $val, $exp) : Cache::forever($key, $val);
 		return true;
 	}
 
 
 
-	public static function get_cache ($id)
+	public static function cacheGet ($key)
 	{
-		return Cache::get(self::key($id));
+		return Cache::get(self::cacheKey($key));
 	}
 
 
 
-	public static function del_cache ($id=null)
+	public static function cacheDel ($key=null)
 	{
-		Cache::forget($id);
-//		return false;
+		Cache::forget(self::cacheKey($key));
+		return true;
 	}
 
 

@@ -2,22 +2,17 @@
 
 //include '../vendor/autoload.php';
 
+interface test
+{
+	static function test ();
+}
+
 class A
 {
-	const CONFIG = [
-		'status' => [
-			0 => '未完成',
-			1 => '已完成',
-		],
 
-		'error' => [
-			'1.1' => '账号密码错误',
-			'1.2' => '登录未授权',
-			'1.3' => '账号权限不足',
-		],
-	];
+	const CONFIG = 666;
 
-	public function test ()
+	public static function test ()
 	{
 		return defined('self::CONFIG');
 	}

@@ -39,8 +39,8 @@ $obj->configToProperty (null, '_', '');
 <li>坏处： 存在代码冗余。
 
 
-### Object Encoder 对象属性编译器
-Debug组建，可独立使用也可置于其他类中使用，如控制器、中间件等。
+### Debug 组件
+可独立使用也可置于其他类中使用，如控制器、中间件等。
 ```php
 class Controller
 {
@@ -60,4 +60,22 @@ class Controller
 
 }
 ```
+
+
+### Cache 缓存组件
+该组件的核心特征在于，由Class的名称（包含Namespace）和自定义主键组合成缓存key，全局化地解决了缓存命名难的痛点，甚至在多数情况下不必考虑缓存命名。
+```php
+namespace Peak\Plugin\Cache;
+
+trait Common
+{
+
+	protected static function cacheKey ($id)
+	{
+		return static::class.':'.(string)$id;
+	}
+
+}
+```
+
 

@@ -2,8 +2,11 @@
 
 namespace Peak\Plugin\Cache;
 
-class File extends Core
+class File implements Core
 {
+
+	use Common;
+	use \Peak\Plugin\Debuger;
 
 	protected $file, $rwx;
 
@@ -15,7 +18,7 @@ class File extends Core
 
 
 
-	protected function set_cache ($dat, $id=null, $exp=60):bool
+	public static function cacheSet ($key, $dat, $exp=60):bool
 	{
 
 		if (!is_string($dat)) {
@@ -36,7 +39,8 @@ class File extends Core
 	}
 
 
-	protected function get_cache ($id=null)
+	
+	public static function cacheGet ($key=null)
 	{
 		if (!file_exists($this->file)) {
 			return (bool)self::debug('缓存文件不存在，路径：“'.$this->file.'”。');
@@ -45,7 +49,7 @@ class File extends Core
 		$res = file_get_contents($this->file);
 
 		if ($res===false) {
-			return (bool)self::debug('无法读取缓存文件，路径：“'.$this->file.'”。');
+			return self::debug('无法读取缓存文件，路径：“'.$this->file.'”。');
 		}
 
 		return $res;
@@ -53,9 +57,9 @@ class File extends Core
 
 
 
-	protected function del_cache ($id=null):bool
+	static function cacheDel ($id=null):bool
 	{
-		return $this->set_cache('');
+		return $this->cacheSet('');
 	}
 
 
@@ -65,7 +69,7 @@ class File extends Core
 	 * */
 	public function content ($dat=null)
 	{
-		return $dat ? $this->set_cache($dat) : $this->get_cache();
+		return $dat ? $this->cacheSet($dat) : $this->cacheGet();
 	}
 
 }
