@@ -2,7 +2,7 @@
 
 namespace Peak\Plugin\Cache;
 
-class File implements Core
+class File
 {
 
 	use Common;
@@ -10,15 +10,19 @@ class File implements Core
 
 	protected $file, $rwx;
 
-	function __construct($file, $rws=0660)
+	/**
+	 * @param string $file 文件存储路径
+	 * @param int $rwx 权限
+	 */
+	function __construct($file, $rwx=0660)
 	{
 		$this->file = $file;
-		$this->rwx = $rws;
+		$this->rwx = $rwx;
 	}
 
 
 
-	public static function cacheSet ($key, $dat, $exp=60):bool
+	protected function set ($dat):bool
 	{
 
 		if (!is_string($dat)) {
@@ -40,7 +44,7 @@ class File implements Core
 
 
 	
-	public static function cacheGet ($key=null)
+	protected function get ()
 	{
 		if (!file_exists($this->file)) {
 			return (bool)self::debug('缓存文件不存在，路径：“'.$this->file.'”。');
@@ -57,19 +61,13 @@ class File implements Core
 
 
 
-	static function cacheDel ($id=null):bool
-	{
-		return $this->cacheSet('');
-	}
-
-
-
 	/**
 	 * 设置|获取缓存文件
+	 * @param string|null $dat 默认null表示获取缓存数据，否则表示设置缓存
 	 * */
 	public function content ($dat=null)
 	{
-		return $dat ? $this->cacheSet($dat) : $this->cacheGet();
+		return $dat ? $this->set($dat) : $this->get();
 	}
 
 }

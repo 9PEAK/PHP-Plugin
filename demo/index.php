@@ -12,6 +12,8 @@ class A
 
 	const CONFIG = 666;
 
+	private $x = 666;
+
 	public static function test ()
 	{
 		return defined('self::CONFIG');
@@ -19,7 +21,7 @@ class A
 }
 
 $a = new A();
-echo $a->test() ? 1 : 0;
+echo $a->test();
 
 //$str = str(-10);
 //
