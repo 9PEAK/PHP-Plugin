@@ -1,5 +1,6 @@
 <?php
 
+namespace Hello;
 //include '../vendor/autoload.php';
 
 interface test
@@ -21,11 +22,12 @@ class A
 }
 
 $a = new A();
-echo $a->test();
+//echo $a->test();
 
-//$str = str(-10);
-//
-//$str = str_random(5, -10);
-//
-//print_r($str);
+$arr = [
+	A::class => 666,
+];
+
+$arr = json_encode($arr);
+echo $arr;
 

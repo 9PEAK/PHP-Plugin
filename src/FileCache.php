@@ -12,7 +12,7 @@ class FileCache {
 		$this->rwx = $rws;
 	}
 
-	use Debuger\Base;
+	use Debuger;
 
 
 	/**
