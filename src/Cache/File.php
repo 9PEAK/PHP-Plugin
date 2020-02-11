@@ -22,14 +22,10 @@ class File
 
 
 
-	protected function set ($dat):bool
+	protected function set ($dat)
 	{
 
-		if (!is_string($dat)) {
-			return self::debug('传入的数据格式字符串型。');
-		}
-
-		if (file_put_contents($this->file, $dat)===false) {
+		if (file_put_contents($this->file, (string)$dat)===false) {
 			return self::debug('无法写入文件，路径：“'.$this->file.'”。');
 		}
 

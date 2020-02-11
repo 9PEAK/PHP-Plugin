@@ -1,33 +1,24 @@
 <?php
 
 namespace Hello;
-//include '../vendor/autoload.php';
+
+include '../vendor/autoload.php';
 
 interface test
 {
 	static function test ();
 }
 
-class A
-{
 
-	const CONFIG = 666;
+use Peak\Plugin\Cache\File;
 
-	private $x = 666;
-
-	public static function test ()
-	{
-		return defined('self::CONFIG');
-	}
+$file = 'abc.json';
+$obj = new File($file, 0777);
+echo $obj->content();
+exit;
+if (!$res=$obj->content(456748974343312213)) {
+    echo $obj->debug();
 }
 
-$a = new A();
-//echo $a->test();
 
-$arr = [
-	A::class => 666,
-];
-
-$arr = json_encode($arr);
-echo $arr;
 
