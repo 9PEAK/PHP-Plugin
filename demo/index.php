@@ -13,12 +13,15 @@ interface test
 use Peak\Plugin\Cache\File;
 
 $file = 'abc.json';
-$obj = new File($file, 0777);
-echo $obj->content();
-exit;
-if (!$res=$obj->content(456748974343312213)) {
+$obj = new File($file, 0666);
+//echo $obj->content();
+//exit;
+if (!$res=$obj->content(7489789)) {
     echo $obj->debug();
 }
+
+
+use Peak\Plugin\Cache\JsonFile;
 
 
 
