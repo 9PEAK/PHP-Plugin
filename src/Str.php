@@ -1,21 +1,24 @@
 <?php
 
-
-const STR = [
-    -1 => 'abcdefghijklmnopqrstuvwxyz',
-    0 => '1234567890',
-    1 => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-];
+//const STR = [
+//    -1 => 'abcdefghijklmnopqrstuvwxyz',
+//    0 => '1234567890',
+//    1 => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+//];
 
 
 /**
  * 返回字符串原材料
- * @param $type string, 1 upper letter, -1 lower letter, 0 integer.
+ * @param string $type 1 upper letter, -1 lower letter, 0 integer.
  * */
-function str($type)
+function string ($type)
 {
     $type = (string)$type;
-    $material = STR;
+    $material = [
+        -1 => 'abcdefghijklmnopqrstuvwxyz',
+        0 => '1234567890',
+        1 => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    ];
     foreach ( $material as $i=>$unit ) {
         if (stripos($type, (string)$i)===false) {
             unset ($material[$i]);
@@ -33,16 +36,14 @@ function str($type)
  * @param string $type 类型
  * @return bool|string
  */
-function str_random ($size=4, $type='-101') {
-    $code = str($type);
+function string_random ($size=4, $type='-101') {
+    $code = string($type);
     $code = str_shuffle($code);
     return substr($code, 0, $size);
 }
 
 
 abstract class Str {
-
-
 
 
 	static function caseCamel ($str, $separator='_')
