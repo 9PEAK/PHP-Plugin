@@ -1,6 +1,6 @@
 <?php
 
-namespace Peak\Plugin\Eloquent\Config;
+namespace Peak\Plugin\Eloquent\Model\Config;
 
 use Peak\Plugin\SQL as Query;
 
