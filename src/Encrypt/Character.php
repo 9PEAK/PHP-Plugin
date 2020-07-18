@@ -6,7 +6,7 @@ trait Character
 
 
     /**
-     * Move the string pointer by the given offset
+     * 截断字符串 前后倒置连接 Move the string pointer by the given offset
      * @param $str. string. the letter or number
      * @param $x. int. offset for the pointer
      * @return string. the changed letter

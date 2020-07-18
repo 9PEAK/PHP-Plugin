@@ -1,9 +1,12 @@
 <?php
 
-namespace Peak\Plugin\Eloquent\Model\Config;
+namespace Peak\Plugin\Eloquent\Model\FieldEnum;
 
 use Peak\Plugin\SQL as Query;
 
+/**
+ * FieldEnum 字段解析在检索时直接查询获取 必须依赖核心Core组件
+ */
 trait Sql
 {
 
@@ -19,7 +22,7 @@ trait Sql
 	public function scopeSelectPropertyForLaravel ($query, array $key, array $eccept=[], $prf='_', $ext='')
 	{
 		$query->addSelect(\DB::raw(
-			static::sqlOfSelectProperties($key, $eccept, $prf, $ext)
+			static::sqlOfSelectFieldEnum($key, $eccept, $prf, $ext)
 		));
 		return $query;
 	}
@@ -31,15 +34,15 @@ trait Sql
 	 * @param $property array 需要查询的参数，一维数组
 	 * @param $eccept array 不需要查询的、排除在外的参数，一维数组
 	 * */
-	public static function sqlOfSelectProperties (array $key=[], array $eccept=[], $prf='_', $ext='')
+	public static function sqlOfSelectFieldEnum (array $key=[], array $eccept=[], $pref='_', $ext='')
 	{
 		// 取交集
-		$key = $key ? array_intersect_key(static::translation(), array_flip($key)) : static::translation();
+		$key = $key ? array_intersect_key(static::fieldEnum(), array_flip($key)) : static::fieldEnum();
 		// 取差集
 		$eccept && $key=array_diff_key($key, array_flip($eccept));
 
 		foreach ($key as $k=>&$v) {
-			$v = Query\Select::caseThenOfSimple($k, $v, $prf.$key.$ext);
+			$v = Query\Select::caseThenOfSimple($k, $v, $pref.$key.$ext);
 		}
 		return $key ? join (',', $key) : '';
 	}

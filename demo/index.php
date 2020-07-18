@@ -4,24 +4,30 @@ namespace Hello;
 
 include '../vendor/autoload.php';
 
-interface test
+
+class A
 {
-	static function test ();
+
+    private $error;
+
+    public function error ($e=null)
+    {
+        if (isset($e)) {
+            $this->error = $e;
+        } else {
+            return $this->error;
+        }
+    }
 }
 
 
-use Peak\Plugin\Cache\File;
+class B extends A{
 
-$file = 'abc.json';
-$obj = new File($file, 0666);
-//echo $obj->content();
-//exit;
-if (!$res=$obj->content(7489789)) {
-    echo $obj->debug();
 }
 
+$a = new B();
+$a->error(666);
 
-use Peak\Plugin\Cache\JsonFile;
-
-
+$b = new B();
+echo $b->error();
 
