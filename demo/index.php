@@ -31,3 +31,7 @@ $a->error(666);
 $b = new B();
 echo $b->error();
 
+
+use Peak\Plugin\Encrypt\Signature;
+
+echo Signature::config()::param('abcd', 666)::reset()::md5();
