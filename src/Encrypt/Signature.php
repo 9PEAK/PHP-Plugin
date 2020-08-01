@@ -34,7 +34,6 @@ class Signature
     }
 
 
-
     private static $param = [];
 
     /**
@@ -45,6 +44,7 @@ class Signature
      */
     static function param ($key, $val='')
     {
+        is_array(self::$param) || self::$param = [];
         if (is_array($key)) {
             foreach ($key as $k=>$v) {
                 self::{__FUNCTION__}($k, (string)$v);
@@ -58,33 +58,28 @@ class Signature
 
     /**
      * 将参数设置成字符串
-     * @param bool $init 重置清空$param
      * @return self
      */
-    static function reset ($init=false)
+    static function reset ()
     {
-        if ($init ) {
-            self::$param = [];
-        } else {
-            self::$config['asc'] ? ksort(self::$param) : krsort(self::$param);
-            foreach (self::$param as $k=>&$v) {
-                if (self::$config['nan']) {
-                    if (!strlen($v)) {
-                        unset(self::$param[$k]);
-                        continue;
-                    }
+        self::$config['asc'] ? ksort(self::$param) : krsort(self::$param);
+        foreach (self::$param as $k=>&$v) {
+            if (self::$config['nan']) {
+                if (!strlen($v)) {
+                    unset(self::$param[$k]);
+                    continue;
                 }
-                $v = $k.'='.$v;
             }
-            self::$param = join(self::$config['glue'], self::$param);
+            $v = $k.'='.$v;
         }
+        self::$param = join(self::$config['glue'], self::$param);
 
         return self::class;
     }
 
 
     /**
-     * md5 签名
+     * md5签名 并清空参数
      * @param string $ext 签名后缀
      * @return string
      */
@@ -95,7 +90,7 @@ class Signature
     }
 
     /**
-     * sha1 签名
+     * sha1签名 并清空参数
      * @param string $ext 签名后缀
      * @return string
      */
