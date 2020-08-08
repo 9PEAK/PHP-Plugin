@@ -2,11 +2,11 @@
 
 namespace Peak\Plugin\Laravel\Filesystem;
 
-class Qiniu
+trait Core
 {
 
 
-    private static $qiniu;
+    private static $disk;
 
 
 
@@ -15,10 +15,10 @@ class Qiniu
      * @param string $disk 硬盘名
      * @return Filesystem
      */
-    static function qiniuDisk ($disk='')
+    static function fileDisk ($disk='')
     {
-        $disk && self::$qiniu=(string)$disk;
-        return Storage::disk(self::$qiniu);
+        $disk && self::$disk=(string)$disk;
+        return \Illuminate\Support\Facades\Storage::disk(self::$disk);
     }
 
 
@@ -29,7 +29,7 @@ class Qiniu
      * @param string $file
      * @return string
      */
-    static function qiniuPath ($file)
+    static function filePath ($file)
     {
         return str_replace('\\', '/', static::class.'/'.$file);
     }
@@ -38,13 +38,14 @@ class Qiniu
     /**
      * 获取七牛文件URL（包含完整路径）
      * @param string $file
-     * @return string
+     * @return string|false 当Disk不支持URL时返回false 否则返回文件的URL字符串 如果文件不存在则返回空字符串
      */
-    static function qiniuUrl ($file)
+    static function fileUrl ($file)
     {
-        $disk = self::qiniuDisk();
-        $file = self::qiniuPath($file);
-        return !$disk->exists($file) ? false : $disk->getUrl($file.'?t='.time());
+        $disk = self::fileDisk();
+        if (!method_exists($disk, 'getUrl')) return false;
+        $file = self::filePath($file);
+        return $disk->exists($file) ? $disk->getUrl($file.'?t='.time()) : '';
     }
 
 
@@ -54,10 +55,10 @@ class Qiniu
      * @param bool $json 默认false返回原始格式 否则尝试将数据处理成Json后返回
      * @return false|string|Json
      */
-    static function qiniuRead ($file, $json=false)
+    static function fileRead ($file, $json=false)
     {
-        if ($file = self::qiniuUrl($file)) {
-//            $file = self::qiniuDisk()->read(self::qiniuPath($file));
+        if ($file = self::fileUrl($file)) {
+//            $file = self::fileDisk()->read(self::filePath($file));
             $file = @file_get_contents($file);
             return $json ? json_decode($file) : $file;
         }
@@ -72,10 +73,10 @@ class Qiniu
      * @param mixed $dat
      * @return bool 是否存储成功
      */
-    static function qiniuSave ($file, $dat) :bool
+    static function fileSave ($file, $dat) :bool
     {
-        $disk = self::qiniuDisk();
-        $file = self::qiniuPath($file);
+        $disk = self::fileDisk();
+        $file = self::filePath($file);
         $dat = is_array($dat)||is_object($dat) ? json_encode($dat) : (string)$dat;
         for ($i=0; $i<3; $i++) {
             if ($disk->put($file, $dat)) return true;
