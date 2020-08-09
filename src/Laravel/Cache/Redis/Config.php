@@ -2,6 +2,8 @@
 
 namespace Peak\Plugin\Laravel\Cache\Redis;
 
+use Illuminate\Support\Facades\Redis;
+
 trait Config
 {
 
@@ -12,6 +14,14 @@ trait Config
     protected static function redis_ini ($exp)
     {
 
+    }
+
+
+    protected static function redis_cli (&$key) :Redis
+    {
+        $redis = Redis::connection();
+        $key = Common::cacheKey('', $key, static::class);
+        return $redis;
     }
 
 
