@@ -7,20 +7,22 @@ use Illuminate\Support\Facades\Redis;
 trait Config
 {
 
-    private static $redis_ini = [
+    private static $redisIni = [
         'exp' => 60, // 默认缓存60分钟
     ];
 
-    protected static function redis_ini ($exp)
+    protected static function redisIni ($exp)
     {
-
+        self::$redisIni = [
+            'exp' => (int)$exp,
+        ];
     }
 
 
-    protected static function redis_cli (&$key) :Redis
+    protected static function redisCli (&$key) :\Illuminate\Redis\Connections\PredisConnection
     {
         $redis = Redis::connection();
-        $key = Common::cacheKey('', $key, static::class);
+        $key = \Peak\Plugin\Laravel\Cache\Common::cacheKey('', $key, static::class);
         return $redis;
     }
 

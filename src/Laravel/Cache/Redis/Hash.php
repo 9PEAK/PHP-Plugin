@@ -2,38 +2,22 @@
 
 namespace Peak\Plugin\Laravel\Cache\Redis;
 
-use Illuminate\Support\Facades\Redis;
-use \Peak\Plugin\Laravel\Cache\Config as Common;
-
 trait Hash
 {
-
 
     use Config;
 
 
     /**
-     * 获取所有的KEY
-     * @param string $ext 扩展
-     * @param bool $flip 是否反转结果
-     * @return array
+     * 查看哈希表key中定的字段field是否存在
+     * @param $key
+     * @param $field
+     * @return bool
      */
-    static function getKeys ($ext='', $flip=false)
+    static function redisHexists ($key, $field) :bool
     {
-        $redis = Redis::connection();
-        $res = $redis->hkeys(self::setKey($ext));
-        return $flip ? array_flip($res) : $res;
-    }
-
-
-
-
-    static function redisHexists ($key, $field, $ext='')
-    {
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
-        $redis->hexists ($key, $field);
+        $redis = self::redisCli($key);
+        return (bool)$redis->hexists ($key, $field);
     }
 
 
@@ -47,11 +31,9 @@ trait Hash
      */
     static function redisHset ($key, $field, $val)
     {
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
+        $redis = self::redisCli($key);
         $redis->hset($key, $field, $val);
-        self::$redis_ini['exp'] && $redis->expire($key, self::$redis_ini['exp']*60);
+        self::$redisIni['exp'] && $redis->expire($key, self::$redisIni['exp']*60);
     }
 
 
@@ -63,10 +45,7 @@ trait Hash
      */
     static function redisHget ($key, $field)
     {
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
-        return $redis->hget($key, $field);
+        return self::redisCli($key)->hget($key, $field);
     }
 
 
@@ -75,50 +54,45 @@ trait Hash
      * 删除哈希表Key字段Field
      * @param string|array $key 键名，如果是数组则将按照数组key顺序排序后组合成字符串
      * @param string|array $field 要删除的字段 多个字段可并成数组
+     * @return bool
      */
-    static function redisHdel ($key, $field)
+    static function redisHdel ($key, $field) :bool
     {
-
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
+        $res = 0;
+        $redis = self::redisCli($key);
         if (is_array($field)) {
             foreach ($field as &$val) {
-                $redis->hdel($key, $val);
+                ($redis->hdel($key, $val)&&!$res) && $res=1;
             }
         } else {
-            $redis->hdel($key, $field);
+            $res = $redis->hdel($key, $field);
         }
+        return (bool)$res;
     }
 
 
     /**
-     * 为哈希表 key 中的字段field的整数值加上增量 int
+     * 为哈希表 key 中的字段field的整数值加上增量 int （如果key.field不存在，将以0为初始值创建新缓存，再加上增量）
      * @param string|array $key 键名，如果是数组则将按照数组key顺序排序后组合成字符串
      * @param string $field 字段名
      * @param int $int 增加值
+     * @return int 返回增加后的值
      */
     static function redisHincrby ($key, $field, $int)
     {
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
-        $redis->hincrby($key, $field, $int);
+        return self::redisCli($key)->hincrby($key, $field, $int);
     }
 
 
     /**
-     * 为哈希表 key 中的字段field的浮点值加上增量 float
+     * 为哈希表 key 中的字段field的浮点值加上增量 float （如果key.field不存在，将以0为初始值创建新缓存，再加上增量）
      * @param string|array $key 键名，如果是数组则将按照数组key顺序排序后组合成字符串
      * @param string $field 字段名
      * @param float $float 增加值
      */
     static function redisHincrbyfloat ($key, $field, $float)
     {
-//        $redis = Redis::connection();
-//        $key = Common::cacheKey('', $key, static::class);
-        $redis = self::redis_cli($key);
-        $redis->hincrbyfloat($key, $field, $float);
+        return self::redisCli($key)->hincrbyfloat($key, $field, $float);
     }
 
 
@@ -129,11 +103,11 @@ trait Hash
      */
     static function redisHmset ($key, array $dat)
     {
-        $redis = self::redis_cli($key);
+        $redis = self::redisCli($key);
         foreach ($dat as $field=>&$val) {
             $redis->hset($key, $field, $val);
         }
-        self::$redis_ini['exp'] && $redis->expire($key, self::$redis_ini['exp']*60);
+        self::$redisIni['exp'] && $redis->expire($key, self::$redisIni['exp']*60);
     }
 
 
@@ -145,8 +119,7 @@ trait Hash
      */
     static function redisHmget ($key, array $field)
     {
-        $redis = self::redis_cli($key);
-        return $redis->hmget($key, $field);
+        return self::redisCli($key)->hmget($key, $field);
     }
 
 
@@ -157,8 +130,7 @@ trait Hash
      */
     static function redisHgetall ($key)
     {
-        $redis = self::redis_cli($key);
-        return $redis->hgetall($key);
+        return self::redisCli($key)->hgetall($key);
     }
 
 
@@ -168,8 +140,7 @@ trait Hash
      */
     static function redisHkeys ($key)
     {
-        $redis = self::redis_cli($key);
-        return $redis->hkeys($key);
+        return self::redisCli($key)->hkeys($key);
     }
 
 
@@ -180,8 +151,7 @@ trait Hash
      */
     static function redisHvals ($key)
     {
-        $redis = self::redis_cli($key);
-        return $redis->hvals($key);
+        return self::redisCli($key)->hvals($key);
     }
 
 
@@ -192,8 +162,7 @@ trait Hash
      */
     static function redisHlen ($key)
     {
-        $redis = self::redis_cli($key);
-        return $redis->hlen($key);
+        return self::redisCli($key)->hlen($key);
     }
 
 

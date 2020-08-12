@@ -6,19 +6,32 @@ trait Core
 {
 
 
-    private static $disk;
+    private static $fileConfig = [
+        'disk' => '硬盘',
+        'path' => true, // 使用Namespace作为文件路劲
+    ];
 
+
+    /**
+     * 获取Laravel 磁盘
+     * @return Filesystem
+     */
+    private static function fileDisk ()
+    {
+        return \Illuminate\Support\Facades\Storage::disk(self::$fileConfig['disk']);
+    }
 
 
     /*
      * 设置七牛Disk
      * @param string $disk 硬盘名
-     * @return Filesystem
      */
-    static function fileDisk ($disk='')
+    static function fileConfig ($disk='', $namespaceForPath=true)
     {
-        $disk && self::$disk=(string)$disk;
-        return \Illuminate\Support\Facades\Storage::disk(self::$disk);
+        self::$fileConfig = [
+            'disk' => (string)$disk,
+            'path' => (bool)$namespaceForPath,
+        ];
     }
 
 
@@ -31,7 +44,8 @@ trait Core
      */
     static function filePath ($file)
     {
-        return str_replace('\\', '/', static::class.'/'.$file);
+        $file = self::$fileConfig['path'] ? static::class.'/'.$file : $file;
+        return str_replace('\\', '/', $file);
     }
 
 
