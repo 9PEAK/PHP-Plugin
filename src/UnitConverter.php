@@ -28,40 +28,12 @@ namespace Peak\UnitConverter {
         'cm/inches' => 2.54,
     ];
 
-
-    trait Core
-    {
-        /**
-         * 转化计量单位
-         * @param float $val
-         * @param string $from 初始单位
-         * @param string $to 转化单位
-         * @param int $prec 精度，默认2精确到小数点后两位
-         * @return float|null 如遇到无法计算的单位返回false
-         */
-        static function convertMeasurement ($val, $from, $to, $prec=2)
-        {
-            // 保证单位是支持的
-            $from = strtolower($from);
-            $to = strtolower($to);
-
-            if (@UNIT[$from] && @UNIT[$to]) {
-                if ($rate = @RATE[$from . '/' . $to]) {
-                    return round($val / $rate, $prec);
-                } else if ($rate = @RATE[$to . '/' . $from]) {
-                    return round($rate * $val, $prec);
-                }
-            }
-
-            return false;
-        }
-    }
-
-
 }
 
 
 namespace {
+
+    use Peak\UnitConverter as Peak;
 
     /**
      * 转化计量单位
@@ -73,7 +45,19 @@ namespace {
      */
     function convert_measurement ($val, $from, $to, $prec=2)
     {
-        return \Peak\UnitConverter\Core::convertMeasurement($val, $from, $to, $prec);
+        // 保证单位是支持的
+        $from = strtolower($from);
+        $to = strtolower($to);
+
+        if (@Peak\UNIT[$from] && @Peak\UNIT[$to]) {
+            if ($rate = @Peak\RATE[$from . '/' . $to]) {
+                return round($val / $rate, $prec);
+            } else if ($rate = @Peak\RATE[$to . '/' . $from]) {
+                return round($rate * $val, $prec);
+            }
+        }
+
+        return false;
     }
 
 }
